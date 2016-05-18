@@ -15,6 +15,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,14 +24,15 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.annotation.Resource;
 import java.util.*;
 
+
 /**
  * Created by YanJun on 2016/5/17.
  */
 
 @RunWith(Parameterized.class)
 public class EnvironmentFTPTest {
-
-    public static WebDriver webDriver;
+    private static final Logger logger = LoggerFactory.getLogger(EnvironmentFTPTest.class);
+    private static WebDriver webDriver;
     private static String testUrl;
     private static String testPort;
     private static String testAppName;
@@ -95,7 +98,7 @@ public class EnvironmentFTPTest {
     @Test
     public void testFtpAdd(){
         try {
-
+            logger.debug("begin ftp add test case");
             WebElement addBtn = ftpManager.getFtpAddBtn(webDriver);
             List<WebElement> beforeFtpTableTdList = ftpManager.getFtpDataTdList(webDriver);
             int beforeAddFtpCount = beforeFtpTableTdList.size();
