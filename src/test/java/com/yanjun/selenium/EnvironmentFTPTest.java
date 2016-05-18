@@ -96,8 +96,8 @@ public class EnvironmentFTPTest {
     public void testFtpAdd(){
         try {
 
-            WebElement addBtn = webDriver.findElement(By.xpath("/html/body/div[1]/div[1]/div/div/button[1]"));
-            List<WebElement> beforeFtpTableTdList = webDriver.findElements(By.xpath("//*[@id=\"ftp_table\"]/tbody/tr"));
+            WebElement addBtn = ftpManager.getFtpAddBtn(webDriver);
+            List<WebElement> beforeFtpTableTdList = ftpManager.getFtpDataTdList(webDriver);
             int beforeAddFtpCount = beforeFtpTableTdList.size();
             List<String> inputParamsList = new ArrayList<String>();
             addBtn.click();
@@ -112,12 +112,12 @@ public class EnvironmentFTPTest {
             webDriver.navigate().refresh();
 
             //不分页的情况下,判断界面上是不是多出一行新数据
-            List<WebElement> afterFtpTableTdList = webDriver.findElements(By.xpath("//*[@id=\"ftp_table\"]/tbody/tr"));
+            List<WebElement> afterFtpTableTdList = ftpManager.getFtpDataTdList(webDriver);
             int afterAddFtpCount = afterFtpTableTdList.size();
             Assert.assertEquals(prepareData().size(),afterAddFtpCount-beforeAddFtpCount);
 
             //判断新增数据行的数据是否和测试数据吻合
-            List<WebElement> ftpDataTdList = ftpManager.getFtpDataTdList(webDriver);
+            List<WebElement> ftpDataTdList = ftpManager.getLastFtpDataTdList(webDriver);
             for(int i=0;i<ftpDataTdList.size();i++) {
                 Assert.assertEquals(ftpDataTdList.get(i).getText(), inputParamsList.get(i));
             }

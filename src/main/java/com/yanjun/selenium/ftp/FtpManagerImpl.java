@@ -15,7 +15,8 @@ import java.util.List;
 
 
 public class FtpManagerImpl implements FtpManager {
-    public List<WebElement> getFtpDataTdList(WebDriver driver){
+
+    public List<WebElement> getLastFtpDataTdList(WebDriver driver){
         List<WebElement> newFtpTdList = driver.findElements(By.xpath("//*[@id=\"ftp_table\"]/tbody/tr[last()]/td"));
         //去掉勾选框,id和修改图片
         newFtpTdList.remove(0);
@@ -23,5 +24,15 @@ public class FtpManagerImpl implements FtpManager {
         newFtpTdList.remove(newFtpTdList.size()-1);
 
         return newFtpTdList;
+    }
+
+    public List<WebElement> getFtpDataTdList(WebDriver driver) {
+        List<WebElement> ftpTableTdList
+                = driver.findElements(By.xpath("//*[@id=\"ftp_table\"]/tbody/tr"));
+        return ftpTableTdList;
+    }
+
+    public WebElement getFtpAddBtn(WebDriver driver) {
+        return driver.findElement(By.xpath("/html/body/div[1]/div[1]/div/div/button[1]"));
     }
 }
