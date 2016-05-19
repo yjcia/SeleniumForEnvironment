@@ -14,7 +14,30 @@
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <bean id="ftpManager" class="com.yanjun.selenium.ftp.FtpManagerImpl"/>
 
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value="classpath:jdbc.properties" />
+    </bean>
+    <!-- dataSource -->
+    <bean id="dataSourceMysql" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${mysql.jdbc.url}"/>
+        <property name="username" value="${mysql.jdbc.user}"/>
+        <property name="password" value="${mysql.jdbc.password}"/>
+        <property name="poolPreparedStatements" value="false"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>
+        <property name="filters" value="stat,log4j"/>
+    </bean>
 
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource">
+            <ref bean="dataSourceMysql" />
+        </property>
+    </bean>
+
+    <bean id="ftpUIManager" class="com.yanjun.selenium.ui.FtpUIManagerImpl">
+    </bean>
+
+    <bean id="ftpDBManager" class="com.yanjun.selenium.db.FtpDBManagerImpl">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
 </beans>

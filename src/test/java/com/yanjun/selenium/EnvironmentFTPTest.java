@@ -1,27 +1,21 @@
 package com.yanjun.selenium;
 
 import com.yanjun.selenium.common.SeleniumAttribute;
-import com.yanjun.selenium.ftp.FtpManager;
-import com.yanjun.selenium.ftp.FtpManagerImpl;
+import com.yanjun.selenium.ui.FtpUIManager;
 import com.yanjun.selenium.util.DriverUtil;
 import com.yanjun.selenium.util.PropertyUtil;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
 
-import javax.annotation.Resource;
 import java.util.*;
 
 
@@ -33,12 +27,13 @@ import java.util.*;
 public class EnvironmentFTPTest {
     private static final Logger logger = LoggerFactory.getLogger(EnvironmentFTPTest.class);
     private static WebDriver webDriver;
+    private static JavascriptExecutor jsExecutor;
     private static String testUrl;
     private static String testPort;
     private static String testAppName;
     private static final String PATH = "ftp";
     private static final String URL_SEPARATOR = "/";
-    private FtpManager ftpManager;
+    private FtpUIManager ftpUIManager;
     private int insertRowCount;
     private String hostNameParam;
     private String userNameParam;
@@ -70,9 +65,10 @@ public class EnvironmentFTPTest {
 
     @Before
     public void setUp(){
+        jsExecutor = (JavascriptExecutor)webDriver;
         ClassPathXmlApplicationContext context =
                 new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-        ftpManager = (FtpManager) context.getBean("ftpManager");
+        ftpUIManager = (FtpUIManager) context.getBean("ftpUIManager");
         webDriver = DriverUtil.getDriver(SeleniumAttribute.FIREFOX);
         testUrl = PropertyUtil.getValue(SeleniumAttribute.TEST_URL);
         testPort = PropertyUtil.getValue(SeleniumAttribute.TEST_PORT);
@@ -99,28 +95,29 @@ public class EnvironmentFTPTest {
     public void testFtpAdd(){
         try {
             logger.debug("begin ftp add test case");
-            WebElement addBtn = ftpManager.getFtpAddBtn(webDriver);
-            List<WebElement> beforeFtpTableTdList = ftpManager.getFtpDataTdList(webDriver);
+            WebElement addBtn = ftpUIManager.getFtpAddBtn(webDriver);
+            List<WebElement> beforeFtpTableTdList = ftpUIManager.getFtpDataTdList(webDriver);
             int beforeAddFtpCount = beforeFtpTableTdList.size();
             List<String> inputParamsList = new ArrayList<String>();
             addBtn.click();
-            JavascriptExecutor jsExecutor = (JavascriptExecutor)webDriver;
+
             Set<String> inputIdSet = inputParamMap.keySet();
             for(String id:inputIdSet){
                 jsExecutor.executeScript("document.getElementById('"+id+"').value='"+inputParamMap.get(id)+"'");
                 inputParamsList.add(inputParamMap.get(id));
             }
+
             jsExecutor.executeScript("document.getElementById('ftpSave').click()");
             Thread.sleep(1000);
             webDriver.navigate().refresh();
 
             //不分页的情况下,判断界面上是不是多出一行新数据
-            List<WebElement> afterFtpTableTdList = ftpManager.getFtpDataTdList(webDriver);
+            List<WebElement> afterFtpTableTdList = ftpUIManager.getFtpDataTdList(webDriver);
             int afterAddFtpCount = afterFtpTableTdList.size();
             Assert.assertEquals(prepareData().size(),afterAddFtpCount-beforeAddFtpCount);
 
             //判断新增数据行的数据是否和测试数据吻合
-            List<WebElement> ftpDataTdList = ftpManager.getLastFtpDataTdList(webDriver);
+            List<WebElement> ftpDataTdList = ftpUIManager.getLastFtpDataTdList(webDriver);
             for(int i=0;i<ftpDataTdList.size();i++) {
                 Assert.assertEquals(ftpDataTdList.get(i).getText(), inputParamsList.get(i));
             }
@@ -132,8 +129,27 @@ public class EnvironmentFTPTest {
     }
 
     @Test
-    public void testFtpRemove(){
-        System.out.println("test ftp remove");
+    public void testFtpSingleRemove(){
+        logger.debug("begin ftp remove test case");
+        try {
+            //非分页情况下,记录被删除前的记录总数
+            int beforeRemoveSize = ftpUIManager.getFtpDataTdList(webDriver).size();
+            //选中要被删除的行
+            WebElement ftpCheckBox = ftpUIManager.getFtpCheckBox(webDriver);
+            ftpCheckBox.click();
+            WebElement removeBtn = ftpUIManager.getFtpRemoveBtn(webDriver);
+            removeBtn.click();
+            Thread.sleep(1000);
+            //非分页情况下,记录被删除后的
+            int afterRemoveSize = ftpUIManager.getFtpDataTdList(webDriver).size();
+            Assert.assertEquals(1,beforeRemoveSize-afterRemoveSize);
+
+
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Test

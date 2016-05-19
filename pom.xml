@@ -17,6 +17,9 @@
         <spring.version>4.1.4.RELEASE</spring.version>
         <log4j.version>1.2.12</log4j.version>
         <slf4j.version>1.6.6</slf4j.version>
+        <druid.version>1.0.11</druid.version>
+        <mysql.connector.version>5.1.30</mysql.connector.version>
+        <dbunit.version>2.5.2</dbunit.version>
     </properties>
 
     <dependencies>
@@ -89,5 +92,20 @@
             <version>${slf4j.version}</version>
         </dependency>
         <!--logger -->
+        <!--mysql connector-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.connector.version}</version>
+        </dependency>
+        <!--mysql connector-->
+        <!-- Druid -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+        <!-- Druid -->
+
     </dependencies>
 </project>
