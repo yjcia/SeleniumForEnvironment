@@ -13,7 +13,7 @@ public interface FtpUIManager {
 
     List<WebElement> getLastFtpFullDataTdList(WebDriver driver);
 
-    List<WebElement> getFtpDataTdList(WebDriver driver);
+    List<WebElement> getFtpDataTrList(WebDriver driver);
 
     WebElement getFtpAddBtn(WebDriver driver);
 

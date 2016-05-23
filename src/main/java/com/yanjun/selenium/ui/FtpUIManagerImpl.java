@@ -26,7 +26,7 @@ public class FtpUIManagerImpl implements FtpUIManager {
         return newFtpTdList;
     }
 
-    public List<WebElement> getFtpDataTdList(WebDriver driver) {
+    public List<WebElement> getFtpDataTrList(WebDriver driver) {
         List<WebElement> ftpTableTdList
                 = driver.findElements(By.xpath("//*[@id=\"ftp_table\"]/tbody/tr"));
         return ftpTableTdList;

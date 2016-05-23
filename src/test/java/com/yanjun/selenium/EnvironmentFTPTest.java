@@ -2,6 +2,7 @@ package com.yanjun.selenium;
 
 import com.yanjun.selenium.common.SeleniumAttribute;
 import com.yanjun.selenium.db.FtpDBManager;
+import com.yanjun.selenium.model.Ftp;
 import com.yanjun.selenium.ui.FtpUIManager;
 import com.yanjun.selenium.util.DriverUtil;
 import com.yanjun.selenium.util.PropertyUtil;
@@ -102,7 +103,7 @@ public class EnvironmentFTPTest {
         try {
             logger.debug("begin ftp add test case");
             WebElement addBtn = ftpUIManager.getFtpAddBtn(webDriver);
-            List<WebElement> beforeFtpTableTdList = ftpUIManager.getFtpDataTdList(webDriver);
+            List<WebElement> beforeFtpTableTdList = ftpUIManager.getFtpDataTrList(webDriver);
             int beforeAddFtpCount = beforeFtpTableTdList.size();
             List<String> inputParamsList = new ArrayList<String>();
             addBtn.click();
@@ -118,7 +119,7 @@ public class EnvironmentFTPTest {
             webDriver.navigate().refresh();
 
             //不分页的情况下,判断界面上是不是多出一行新数据
-            List<WebElement> afterFtpTableTdList = ftpUIManager.getFtpDataTdList(webDriver);
+            List<WebElement> afterFtpTableTdList = ftpUIManager.getFtpDataTrList(webDriver);
             int afterAddFtpCount = afterFtpTableTdList.size();
             Assert.assertEquals(prepareData().size(),afterAddFtpCount-beforeAddFtpCount);
 
@@ -139,7 +140,7 @@ public class EnvironmentFTPTest {
         logger.debug("begin ftp remove test case");
         try {
             //非分页情况下,记录被删除前的记录总数
-            int beforeRemoveSize = ftpUIManager.getFtpDataTdList(webDriver).size();
+            int beforeRemoveSize = ftpUIManager.getFtpDataTrList(webDriver).size();
             //选中要被删除的行,默认最后一行
             WebElement ftpLastRow = ftpUIManager.getLastFtpFullDataTrList(webDriver);
             WebElement idElement = ftpLastRow.findElement(By.xpath("td[2]"));
@@ -149,7 +150,7 @@ public class EnvironmentFTPTest {
             removeBtn.click();
             Thread.sleep(1000);
             //非分页情况下,记录被删除后的
-            int afterRemoveSize = ftpUIManager.getFtpDataTdList(webDriver).size();
+            int afterRemoveSize = ftpUIManager.getFtpDataTrList(webDriver).size();
             Assert.assertEquals(1,beforeRemoveSize-afterRemoveSize);
             //数据库验证是否还存在选中的记录
             Assert.assertNull(ftpDBManager.findFtpDataById(selectId));
@@ -173,12 +174,58 @@ public class EnvironmentFTPTest {
     }
     @Test
     public void testFtpSearch(){
-        System.out.println("test ftp search");
+        logger.debug("begin ftp search test case");
+        try {
+            //获得搜索框
+            WebElement searchInputElement =
+                    webDriver.findElement(By.className("search")).findElement(By.xpath("input"));
+            //输入搜作条件触发搜索功能
+            searchInputElement.sendKeys("kff16");
+            Thread.sleep(2000);
+            List<WebElement> searchElementUIList = ftpUIManager.getFtpDataTrList(webDriver);
+            List<Ftp> searchElementDBList = ftpDBManager.findFtpBySearchInput("kff16");
+            //判断查询结果集数量
+            Assert.assertEquals(searchElementDBList.size(),searchElementUIList.size());
+            //判断查询结果id
+            if(searchElementDBList.size() == searchElementUIList.size()){
+                for(int i=0;i<searchElementDBList.size();i++){
+                    int idForUI = Integer.parseInt(searchElementUIList.
+                            get(i).findElement(By.xpath("td[2]")).getText());
+                    int idForDB = searchElementDBList.get(i).getId();
+                    Assert.assertEquals(idForUI,idForDB);
+                }
+            }
+            //ftpDBManager.findFtpBySearchInput("kff16");
+
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
-    public void testFtpList(){
-        System.out.println("test ftp load");
+    public void testFtpUpdate(){
+        logger.debug("begin ftp update test case");
+        try {
+            //选中要被更新的行,默认最后一行
+            WebElement ftpLastRow = ftpUIManager.getLastFtpFullDataTrList(webDriver);
+            ftpLastRow.click();
+            WebElement idElement = ftpLastRow.findElement(By.xpath("td[2]"));
+            int selectId = Integer.parseInt(idElement.getText());
+            //点击修改按钮
+            WebElement updateBtn = ftpLastRow.findElement(By.xpath("td[last()]/span[@id='update']"));
+            updateBtn.click();
+            Thread.sleep(1000);
+            //更新remark字段,此处可以使用参数化完成
+            jsExecutor.executeScript("document.getElementById('updateRemark').value='test update'");
+            jsExecutor.executeScript("document.getElementById('updateFtpBtn').click()");
+            Thread.sleep(1000);
+            Ftp ftp = ftpDBManager.findFtpDataById(selectId);
+            Assert.assertEquals("test update",ftp.getRemark());
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 
