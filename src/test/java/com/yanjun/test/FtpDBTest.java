@@ -1,6 +1,8 @@
 package com.yanjun.test;
 
 import com.yanjun.selenium.db.FtpDBManager;
+import com.yanjun.selenium.model.Ftp;
+import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -20,7 +22,9 @@ public class FtpDBTest {
     }
 
     @Test
-    public void testFtpAdd(){
-
+    public void testFtpFindById(){
+        Ftp ftp = ftpDBManager.findFtpDataById(61);
+        //Assert.assertNotNull(ftp);
+        System.out.println(ftp);
     }
 }

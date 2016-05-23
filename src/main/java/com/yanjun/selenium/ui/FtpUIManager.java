@@ -19,5 +19,8 @@ public interface FtpUIManager {
 
     WebElement getFtpRemoveBtn(WebDriver driver);
 
-    WebElement getFtpCheckBox(WebDriver driver);
+    WebElement getLastFtpFullDataTrList(WebDriver driver);
+
+    WebElement getSelectRow(WebDriver driver);
+
 }

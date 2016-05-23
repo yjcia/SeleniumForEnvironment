@@ -1,6 +1,7 @@
 package com.yanjun.selenium;
 
 import com.yanjun.selenium.common.SeleniumAttribute;
+import com.yanjun.selenium.db.FtpDBManager;
 import com.yanjun.selenium.ui.FtpUIManager;
 import com.yanjun.selenium.util.DriverUtil;
 import com.yanjun.selenium.util.PropertyUtil;
@@ -9,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -34,6 +36,7 @@ public class EnvironmentFTPTest {
     private static final String PATH = "ftp";
     private static final String URL_SEPARATOR = "/";
     private FtpUIManager ftpUIManager;
+    private FtpDBManager ftpDBManager;
     private int insertRowCount;
     private String hostNameParam;
     private String userNameParam;
@@ -65,11 +68,13 @@ public class EnvironmentFTPTest {
 
     @Before
     public void setUp(){
-        jsExecutor = (JavascriptExecutor)webDriver;
+
         ClassPathXmlApplicationContext context =
                 new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
         ftpUIManager = (FtpUIManager) context.getBean("ftpUIManager");
+        ftpDBManager = (FtpDBManager) context.getBean("ftpDBManager");
         webDriver = DriverUtil.getDriver(SeleniumAttribute.FIREFOX);
+        jsExecutor = (JavascriptExecutor)webDriver;
         testUrl = PropertyUtil.getValue(SeleniumAttribute.TEST_URL);
         testPort = PropertyUtil.getValue(SeleniumAttribute.TEST_PORT);
         testAppName = PropertyUtil.getValue(SeleniumAttribute.TEST_APP_NAME);
@@ -78,6 +83,7 @@ public class EnvironmentFTPTest {
         if(webDriver != null){
             webDriver.get(needTestUrl);
         }
+
     }
 
     @Parameterized.Parameters
@@ -134,17 +140,19 @@ public class EnvironmentFTPTest {
         try {
             //非分页情况下,记录被删除前的记录总数
             int beforeRemoveSize = ftpUIManager.getFtpDataTdList(webDriver).size();
-            //选中要被删除的行
-            WebElement ftpCheckBox = ftpUIManager.getFtpCheckBox(webDriver);
-            ftpCheckBox.click();
+            //选中要被删除的行,默认最后一行
+            WebElement ftpLastRow = ftpUIManager.getLastFtpFullDataTrList(webDriver);
+            WebElement idElement = ftpLastRow.findElement(By.xpath("td[2]"));
+            int selectId = Integer.parseInt(idElement.getText());
+            ftpLastRow.click();
             WebElement removeBtn = ftpUIManager.getFtpRemoveBtn(webDriver);
             removeBtn.click();
             Thread.sleep(1000);
             //非分页情况下,记录被删除后的
             int afterRemoveSize = ftpUIManager.getFtpDataTdList(webDriver).size();
             Assert.assertEquals(1,beforeRemoveSize-afterRemoveSize);
-
-
+            //数据库验证是否还存在选中的记录
+            Assert.assertNull(ftpDBManager.findFtpDataById(selectId));
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -152,6 +160,17 @@ public class EnvironmentFTPTest {
 
     }
 
+    @Test
+    public void testFtpGetSelectRow(){
+        //选中要被删除的行,默认最后一行
+        WebElement ftpLastRow = ftpUIManager.getLastFtpFullDataTrList(webDriver);
+        ftpLastRow.click();
+        WebElement selectRow = ftpUIManager.getSelectRow(webDriver);
+        WebElement idElement = selectRow.findElement(By.xpath("td[2]"));
+        System.out.println(idElement.getText());
+
+
+    }
     @Test
     public void testFtpSearch(){
         System.out.println("test ftp search");
