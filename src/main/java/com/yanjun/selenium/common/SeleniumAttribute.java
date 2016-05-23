@@ -13,4 +13,5 @@ public class SeleniumAttribute {
     public static final String TEST_URL = "test.url";
     public static final String TEST_PORT = "test.port";
     public static final String TEST_APP_NAME = "test.appname";
+    public static final String MODEL_PACKAGE = "com.yanjun.selenium.model.";
 }

@@ -1,0 +1,26 @@
+<parameters>
+    <parameter type="insert">
+        <object name="ftp">
+            <host_name id="inputHostName">10.104.46.200</host_name>
+            <user id="inputUser">kff19</user>
+            <password id="inputPwd">kff19</password>
+            <port id="inputPort">22</port>
+            <path id="inputPath">/data1/domains</path>
+            <remark id="inputRemark">for test</remark>
+        </object>
+        <object name="ftp">
+            <host_name id="inputHostName">10.104.46.200</host_name>
+            <user id="inputUser">kff20</user>
+            <password id="inputPwd">kff20</password>
+            <port id="inputPort">22</port>
+            <path id="inputPath">/data1/domains</path>
+            <remark id="inputRemark">for test</remark>
+        </object>
+    </parameter>
+    <parameter type="update">
+
+    </parameter>
+    <parameter type="delete">
+
+    </parameter>
+</parameters>
