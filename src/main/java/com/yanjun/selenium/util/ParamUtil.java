@@ -49,6 +49,27 @@ public class ParamUtil {
         return paramMapList;
     }
 
+    public static List<String> genParamForFtpSearch(String type,String objName)
+            throws ClassNotFoundException, InvocationTargetException, IllegalAccessException {
+        Element rootElement = doc.getRootElement();
+        List<Element> paramList = rootElement.elements("parameter");
+        List<String> paramStrList = new ArrayList<String>();
+        for(Element parameter:paramList){
+            if(parameter.attributeValue("type").equals(type)){
+                List<Element> objList = parameter.elements("object");
+                for(Element objElement:objList){
+                    if(objElement.attributeValue("name").equals(objName)){
+                        List<Element> objElements = objElement.elements();
+                        for(Element e:objElements){
+                            paramStrList.add(e.getText());
+                        }
+                    }
+                }
+            }
+        }
+        return paramStrList;
+    }
+
     public static String getModelClassName(String objName){
         String className = objName.substring(0,1).toUpperCase() + objName.substring(1);
         return SeleniumAttribute.MODEL_PACKAGE + className;

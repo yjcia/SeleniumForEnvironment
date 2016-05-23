@@ -25,4 +25,18 @@ public class FtpParamTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testParamSearchList(){
+        try {
+            List<String> paramList = ParamUtil.genParamForFtpSearch("search","ftp");
+            System.out.println(paramList.size());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -20,7 +20,10 @@
     <parameter type="update">
 
     </parameter>
-    <parameter type="delete">
-
+    <parameter type="search">
+        <object name="ftp">
+            <search_text>kff19</search_text>
+            <search_text>kff20</search_text>
+        </object>
     </parameter>
 </parameters>

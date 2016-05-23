@@ -161,24 +161,35 @@ public class EnvironmentFTPTest {
             WebElement searchInputElement =
                     webDriver.findElement(By.className("search")).findElement(By.xpath("input"));
             //输入搜作条件触发搜索功能
-            searchInputElement.sendKeys("kff16");
-            Thread.sleep(2000);
-            List<WebElement> searchElementUIList = ftpUIManager.getFtpDataTrList(webDriver);
-            List<Ftp> searchElementDBList = ftpDBManager.findFtpBySearchInput("kff16");
-            //判断查询结果集数量
-            Assert.assertEquals(searchElementDBList.size(), searchElementUIList.size());
-            //判断查询结果id
-            if (searchElementDBList.size() == searchElementUIList.size()) {
-                for (int i = 0; i < searchElementDBList.size(); i++) {
-                    int idForUI = Integer.parseInt(searchElementUIList.
-                            get(i).findElement(By.xpath("td[2]")).getText());
-                    int idForDB = searchElementDBList.get(i).getId();
-                    Assert.assertEquals(idForUI, idForDB);
+            List<String> searchTextList = ParamUtil.genParamForFtpSearch("search","ftp");
+            for(String searchkey:searchTextList){
+                searchInputElement.clear();
+                searchInputElement.sendKeys(searchkey);
+                Thread.sleep(2000);
+                List<WebElement> searchElementUIList = ftpUIManager.getFtpDataTrList(webDriver);
+                List<Ftp> searchElementDBList = ftpDBManager.findFtpBySearchInput(searchkey);
+                //判断查询结果集数量
+                Assert.assertEquals(searchElementDBList.size(), searchElementUIList.size());
+                //判断查询结果id
+                if (searchElementDBList.size() == searchElementUIList.size()) {
+                    for (int i = 0; i < searchElementDBList.size(); i++) {
+                        int idForUI = Integer.parseInt(searchElementUIList.
+                                get(i).findElement(By.xpath("td[2]")).getText());
+                        int idForDB = searchElementDBList.get(i).getId();
+                        Assert.assertEquals(idForUI, idForDB);
+                    }
                 }
             }
+
             //ftpDBManager.findFtpBySearchInput("kff16");
 
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
