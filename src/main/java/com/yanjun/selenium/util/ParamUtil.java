@@ -70,6 +70,32 @@ public class ParamUtil {
         return paramStrList;
     }
 
+    public static List<Map<String,String>> genParamForFtpUpdate(String type,String objName)
+            throws ClassNotFoundException, InvocationTargetException, IllegalAccessException {
+        Element rootElement = doc.getRootElement();
+        List<Element> paramList = rootElement.elements("parameter");
+        List<Map<String,String>> paramMapList = new ArrayList<Map<String, String>>();
+        for(Element parameter:paramList){
+            if(parameter.attributeValue("type").equals(type)){
+                List<Element> objList = parameter.elements("object");
+                for(Element objElement:objList){
+                    if(objElement.attributeValue("name").equals(objName)){
+                        List<Element> objElements = objElement.elements();
+                        for(Element e:objElements){
+                            Map<String,String> objMap = new LinkedHashMap<String,String>();
+                            String elementValue = e.getStringValue();
+                            String id = e.attributeValue("id");
+                            objMap.put(id,elementValue);
+                            paramMapList.add(objMap);
+                        }
+
+                    }
+                }
+            }
+        }
+        return paramMapList;
+    }
+
     public static String getModelClassName(String objName){
         String className = objName.substring(0,1).toUpperCase() + objName.substring(1);
         return SeleniumAttribute.MODEL_PACKAGE + className;

@@ -52,11 +52,6 @@ public class EnvironmentFTPTest {
 
     @Before
     public void setUp() {
-
-//        ClassPathXmlApplicationContext context =
-//                new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
-        //ftpUIManager = (FtpUIManager) context.getBean("ftpUIManager");
-        //ftpDBManager = (FtpDBManager) context.getBean("ftpDBManager");
         webDriver = DriverUtil.getDriver(SeleniumAttribute.FIREFOX);
         jsExecutor = (JavascriptExecutor) webDriver;
         testUrl = PropertyUtil.getValue(SeleniumAttribute.TEST_URL);
@@ -180,9 +175,6 @@ public class EnvironmentFTPTest {
                     }
                 }
             }
-
-            //ftpDBManager.findFtpBySearchInput("kff16");
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -199,21 +191,35 @@ public class EnvironmentFTPTest {
         logger.debug("begin ftp update test case");
         try {
             //选中要被更新的行,默认最后一行
-            WebElement ftpLastRow = ftpUIManager.getLastFtpFullDataTrList(webDriver);
-            ftpLastRow.click();
-            WebElement idElement = ftpLastRow.findElement(By.xpath("td[2]"));
-            int selectId = Integer.parseInt(idElement.getText());
-            //点击修改按钮
-            WebElement updateBtn = ftpLastRow.findElement(By.xpath("td[last()]/span[@id='update']"));
-            updateBtn.click();
-            Thread.sleep(1000);
-            //更新remark字段,此处可以使用参数化完成
-            jsExecutor.executeScript("document.getElementById('updateRemark').value='test update'");
-            jsExecutor.executeScript("document.getElementById('updateFtpBtn').click()");
-            Thread.sleep(1000);
-            Ftp ftp = ftpDBManager.findFtpDataById(selectId);
-            Assert.assertEquals("test update", ftp.getRemark());
+            List<Map<String, String>> ftpUpdateParamList = ParamUtil.genParamForFtpUpdate("update", "ftp");
+            for(Map<String, String> paramMap : ftpUpdateParamList){
+                Set<String> inputIdSetForAdd = paramMap.keySet();
+                for (String id : inputIdSetForAdd) {
+                    WebElement ftpLastRow = ftpUIManager.getLastFtpFullDataTrList(webDriver);
+                    ftpLastRow.click();
+                    WebElement idElement = ftpLastRow.findElement(By.xpath("td[2]"));
+                    int selectId = Integer.parseInt(idElement.getText());
+                    //点击修改按钮
+                    WebElement updateBtn = ftpLastRow.findElement(By.xpath("td[last()]/span[@id='update']"));
+                    updateBtn.click();
+                    Thread.sleep(1000);
+                    //更新remark字段,此处可以使用参数化完成
+                    jsExecutor.executeScript("document.getElementById('"+id+"').value='"+paramMap.get(id)+"'");
+                    jsExecutor.executeScript("document.getElementById('updateFtpBtn').click()");
+                    Thread.sleep(1000);
+                    Ftp ftp = ftpDBManager.findFtpDataById(selectId);
+                    Assert.assertEquals(paramMap.get(id), ftp.getRemark());
+                }
+
+            }
+
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 

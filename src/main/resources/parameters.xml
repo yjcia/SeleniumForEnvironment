@@ -18,7 +18,10 @@
         </object>
     </parameter>
     <parameter type="update">
-
+        <object name="ftp">
+            <update_text id="updateRemark">kff19 update</update_text>
+            <update_text id="updateRemark">kff20 update</update_text>
+        </object>
     </parameter>
     <parameter type="search">
         <object name="ftp">
