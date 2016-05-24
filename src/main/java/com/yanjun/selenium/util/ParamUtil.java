@@ -71,11 +71,6 @@ public class ParamUtil {
         return paramMapList;
     }
 
-    public static String getModelClassName(String objName) {
-        String className = objName.substring(0, 1).toUpperCase() + objName.substring(1);
-        return SeleniumAttribute.MODEL_PACKAGE + className;
-    }
-
     public static List<List<Element>> getObjElements(String type, String objName) {
         Element rootElement = doc.getRootElement();
         List<Element> paramList = rootElement.elements("parameter");
