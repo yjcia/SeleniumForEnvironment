@@ -24,6 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.util.*;
 
 
@@ -37,9 +38,10 @@ public class EnvironmentFTPTest {
     private static final Logger logger = LoggerFactory.getLogger(EnvironmentFTPTest.class);
     private static WebDriver webDriver;
     private static JavascriptExecutor jsExecutor;
-    private static String testUrl;
-    private static String testPort;
-    private static String testAppName;
+    private String testRemoteUrl;
+    private String testUrl;
+    private String testMode;
+    private String testAppName;
     private static final String PATH = "ftp";
     private static final String URL_SEPARATOR = "/";
 
@@ -52,15 +54,25 @@ public class EnvironmentFTPTest {
 
     @Before
     public void setUp() {
-        webDriver = DriverUtil.getDriver(SeleniumAttribute.FIREFOX);
-        jsExecutor = (JavascriptExecutor) webDriver;
-        testUrl = PropertyUtil.getValue(SeleniumAttribute.TEST_URL);
-        testPort = PropertyUtil.getValue(SeleniumAttribute.TEST_PORT);
-        testAppName = PropertyUtil.getValue(SeleniumAttribute.TEST_APP_NAME);
-        String needTestUrl = testUrl + URL_SEPARATOR + testAppName + URL_SEPARATOR + PATH;
+        try {
+            testRemoteUrl = PropertyUtil.getValue(SeleniumAttribute.TEST_REMOTE_URL);
+            testUrl = PropertyUtil.getValue(SeleniumAttribute.TEST_URL);
+            testAppName = PropertyUtil.getValue(SeleniumAttribute.TEST_APP_NAME);
+            String needTestUrl = testUrl + URL_SEPARATOR + testAppName + URL_SEPARATOR + PATH;
+            testMode = PropertyUtil.getValue(SeleniumAttribute.TEST_MODE);
+            if (testMode.equals(SeleniumAttribute.TEST_MODE_LOCAL)) {
+                webDriver = DriverUtil.getDriver(SeleniumAttribute.FIREFOX);
+            } else if (testMode.equals(SeleniumAttribute.TEST_MODE_NODE)) {
+                webDriver = DriverUtil.getRemoteDriver(SeleniumAttribute.FIREFOX, testRemoteUrl);
+            }
+            jsExecutor = (JavascriptExecutor) webDriver;
 
-        if (webDriver != null) {
-            webDriver.get(needTestUrl);
+
+            if (webDriver != null) {
+                webDriver.get(needTestUrl);
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
 
     }

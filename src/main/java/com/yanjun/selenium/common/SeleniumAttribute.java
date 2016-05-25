@@ -14,4 +14,9 @@ public class SeleniumAttribute {
     public static final String TEST_PORT = "test.port";
     public static final String TEST_APP_NAME = "test.appname";
     public static final String MODEL_PACKAGE = "com.yanjun.selenium.model.";
+    public static final String TEST_MODE = "test.mode";
+    public static final String TEST_MODE_NODE = "node";
+    public static final String TEST_MODE_LOCAL = "local";
+    public static final String TEST_REMOTE_URL = "test.remote.url";
+    public static final String TEST_REMOTE_PORT = "test.remote.port";
 }
