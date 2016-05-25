@@ -119,7 +119,9 @@ public class EnvironmentFTPTest {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
+        finally {
+            webDriver.close();
+        }
     }
 
     @Test
@@ -144,6 +146,8 @@ public class EnvironmentFTPTest {
 
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }finally {
+            webDriver.close();
         }
 
     }
@@ -156,8 +160,7 @@ public class EnvironmentFTPTest {
         WebElement selectRow = ftpUIManager.getSelectRow(webDriver);
         WebElement idElement = selectRow.findElement(By.xpath("td[2]"));
         System.out.println(idElement.getText());
-
-
+        webDriver.close();
     }
 
     @Test
@@ -195,6 +198,8 @@ public class EnvironmentFTPTest {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        }finally{
+            webDriver.close();
         }
     }
 
@@ -233,6 +238,8 @@ public class EnvironmentFTPTest {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        }finally {
+            webDriver.close();
         }
 
 
