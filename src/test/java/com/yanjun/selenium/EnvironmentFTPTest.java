@@ -9,6 +9,7 @@ import com.yanjun.selenium.util.ParamUtil;
 import com.yanjun.selenium.util.PropertyUtil;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
